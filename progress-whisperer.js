@@ -3,19 +3,25 @@
 
     function logProgress() {
         const video = document.querySelector('video');
-        const title = document.title;
-        if (video) {
-            console.log(`🎬 "${title}" at ${Math.floor(video.currentTime)}s`);
-        } else {
-            console.log('⚠️ No video element found');
+        if (!video) {
+            console.log('⚠️ No video element found, retrying...');
+            setTimeout(logProgress, 1000);
+            return;
         }
+
+        setInterval(() => {
+            const title = document.title;
+            const current = Math.floor(video.currentTime);
+            const duration = Math.floor(video.duration);
+            const percent = ((current / duration) * 100).toFixed(1);
+            console.log(`🎬 "${title}" at ${current}s (${percent}%)`);
+        }, 5000);
     }
 
     window.addEventListener('yt-navigate-finish', () => {
         console.log('🔁 Navigation finished, restarting progress log');
-        clearInterval(window._ytProgressInterval);
-        window._ytProgressInterval = setInterval(logProgress, 5000);
+        logProgress();
     });
 
-    window._ytProgressInterval = setInterval(logProgress, 5000);
+    logProgress();
 })();
