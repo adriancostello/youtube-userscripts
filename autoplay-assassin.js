@@ -3,11 +3,18 @@
 
     function killAutoplay() {
         const toggle = document.querySelector('ytd-autoplay-renderer tp-yt-paper-toggle-button');
-        if (toggle && toggle.hasAttribute('checked')) {
-            toggle.click();
-            console.log('🛑 Autoplay toggle disabled');
+        if (toggle) {
+            const isOn = toggle.hasAttribute('checked');
+            const isDisabled = toggle.hasAttribute('disabled');
+            if (isOn && !isDisabled) {
+                toggle.click();
+                console.log('🔴 Autoplay toggle disabled');
+            } else {
+                console.log('✅ Autoplay already off or toggle not clickable');
+            }
         } else {
-            console.log('✅ Autoplay already off or toggle not found');
+            console.log('⚠️ Autoplay toggle not found, retrying...');
+            setTimeout(killAutoplay, 1000); // Retry after 1s
         }
     }
 
@@ -18,7 +25,7 @@
     }
 
     window.addEventListener('yt-navigate-finish', () => {
-        console.log('🔁 Navigation finished, rechecking autoplay');
+        console.log('🧭 Navigation finished, rechecking autoplay');
         killAutoplay();
     });
 
